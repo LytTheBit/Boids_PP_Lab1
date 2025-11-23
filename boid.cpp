@@ -4,7 +4,7 @@
 #include <cmath>
 #include <omp.h>
 
-
+// Inizializza i boids con posizioni e velocità casuali
 BoidSystem::BoidSystem(std::size_t count)
     : m_boids(count), m_next(count)
 {
@@ -19,6 +19,7 @@ BoidSystem::BoidSystem(std::size_t count)
     }
 }
 
+// Gestisce il wrapping delle posizioni ai bordi della finestra
 void BoidSystem::wrapPosition(sf::Vector2f& p) {
     if (p.x < 0.f) p.x += WINDOW_WIDTH;
     else if (p.x >= WINDOW_WIDTH) p.x -= WINDOW_WIDTH;
@@ -27,6 +28,15 @@ void BoidSystem::wrapPosition(sf::Vector2f& p) {
     else if (p.y >= WINDOW_HEIGHT) p.y -= WINDOW_HEIGHT;
 }
 
+// Disegna tutti i boids
+void BoidSystem::draw(sf::RenderWindow& window) const {
+    for (const auto& b : m_boids) {
+        sf::ConvexShape shape = makeBoidShape(b);
+        window.draw(shape);
+    }
+}
+
+// Crea la forma grafica di un boid
 sf::ConvexShape BoidSystem::makeBoidShape(const Boid& boid) {
     sf::ConvexShape shape;
     shape.setPointCount(3);

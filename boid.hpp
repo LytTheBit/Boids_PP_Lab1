@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-struct boid {
+struct Boid {
     sf::Vector2f position;
     sf::Vector2f velocity;
 };
@@ -17,9 +17,9 @@ public:
     void draw(sf::RenderWindow& window) const;
 
 private:
-    std::vector<boid> m_boids;   // stato attuale
-    std::vector<boid> m_next;    // double buffering
+    std::vector<Boid> m_boids;   // stato attuale
+    std::vector<Boid> m_next;    // double buffering
 
     static void wrapPosition(sf::Vector2f& p);
-    static sf::ConvexShape makeBoidShape(const boid& b);
+    static sf::ConvexShape makeBoidShape(const Boid& b);
 };

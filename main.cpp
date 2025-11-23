@@ -30,8 +30,7 @@ int main() {
         // Delta time
         float dt = clock.restart().asSeconds();
 
-        // Aggiornamento della simulazione
-        // --- scegli quale versione usare ---
+        // scegli quale versione usare (performance comparison)
         boids.updateSequential(dt);   // versione sequenziale
         // boids.updateParallel(dt);  // versione parallela con OpenMP
 
