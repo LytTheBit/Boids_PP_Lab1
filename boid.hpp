@@ -22,4 +22,5 @@ private:
 
     static void wrapPosition(sf::Vector2f& p);
     static sf::ConvexShape makeBoidShape(const Boid& b);
+    Boid computeBoidUpdate(std::size_t i, float dt) const;
 };
