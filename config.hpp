@@ -5,6 +5,7 @@ constexpr unsigned int WINDOW_HEIGHT = 600;
 
 // Parametri del modello boids
 constexpr float MAX_SPEED          = 120.0f;
+constexpr float MIN_SPEED          = 40.f;   // velocità di crociera minima
 constexpr float PERCEPTION_RADIUS  = 60.0f;   // raggio vicinato
 constexpr float SEPARATION_RADIUS  = 20.0f;   // distanza minima
 constexpr float ALIGN_WEIGHT       = 0.5f;

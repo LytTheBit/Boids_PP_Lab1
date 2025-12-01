@@ -8,11 +8,12 @@
 BoidSystem::BoidSystem(std::size_t count)
     : m_boids(count), m_next(count)
 {
-    std::mt19937 rng{42};
-    std::uniform_real_distribution<float> xDist(0.f, static_cast<float>(WINDOW_WIDTH));
-    std::uniform_real_distribution<float> yDist(0.f, static_cast<float>(WINDOW_HEIGHT));
-    std::uniform_real_distribution<float> vDist(-50.f, 50.f);
+    std::mt19937 rng{42}; // Generatore di numeri casuali con seed fisso per riproducibilità
+    std::uniform_real_distribution<float> xDist(0.f, static_cast<float>(WINDOW_WIDTH)); // Distribuzione uniforme per la posizione x
+    std::uniform_real_distribution<float> yDist(0.f, static_cast<float>(WINDOW_HEIGHT)); // Distribuzione uniforme per la posizione y
+    std::uniform_real_distribution<float> vDist(-50.f, 50.f); // Distribuzione uniforme per la velocità
 
+    // Inizializza ogni boid
     for (auto &b : m_boids) {
         b.position = {xDist(rng), yDist(rng)};
         b.velocity = {vDist(rng), vDist(rng)};
@@ -40,15 +41,16 @@ void BoidSystem::draw(sf::RenderWindow& window) const {
 sf::ConvexShape BoidSystem::makeBoidShape(const Boid& boid) {
     sf::ConvexShape shape;
     shape.setPointCount(3);
-    float size = 8.f;
+    float size = 6.f; // Dimensione del boid
     shape.setPoint(0, {0.f, -size});
     shape.setPoint(1, {-size, size});
     shape.setPoint(2, {size, size});
     shape.setFillColor(sf::Color::White);
     shape.setPosition(boid.position);
 
-    float angle = std::atan2(boid.velocity.y, boid.velocity.x) * 180.f / 3.14159265f + 90.f;
-    shape.setRotation(angle);
+    shape.setOrigin(0.f, size * 0.5f);
+
+    shape.setRotation(boid.headingDeg);
     return shape;
 }
 
@@ -99,8 +101,11 @@ Boid BoidSystem::computeBoidUpdate(std::size_t i, float dt) const {
             alignment += m_boids[j].velocity;
             cohesion  += m_boids[j].position;
 
-            if (dist2 < SEPARATION_RADIUS * SEPARATION_RADIUS) {
-                separation -= diff;
+            float dist = std::sqrt(dist2);   // distanza reale
+
+            if (dist > 1e-4f) {
+                // repulsione più stabile e graduale
+                separation -= diff / dist;         // oppure / (dist*dist) se vuoi più forza vicino
             }
         }
     }
@@ -118,18 +123,39 @@ Boid BoidSystem::computeBoidUpdate(std::size_t i, float dt) const {
              + SEPARATION_WEIGHT * separation;
     }
 
-    // Limita la velocità
+    // Limita la velocità massima
     float speed2 = vel.x * vel.x + vel.y * vel.y;
-    if (speed2 > MAX_SPEED * MAX_SPEED) {
-        float factor = MAX_SPEED / std::sqrt(speed2);
+    float speed  = std::sqrt(speed2);
+
+    if (speed > MAX_SPEED) {
+        float factor = MAX_SPEED / speed;
         vel.x *= factor;
         vel.y *= factor;
+        speed  = MAX_SPEED;
+        speed2 = speed * speed;
     }
+
+    // Impone una velocità minima per evitare che i boids si spengano
+    if (speed < MIN_SPEED && speed > 1e-6f) {
+        float factor = MIN_SPEED / speed;
+        vel.x *= factor;
+        vel.y *= factor;
+        speed  = MIN_SPEED;
+        speed2 = speed * speed;
+    }
+
 
     Boid out;
     out.velocity = vel;
     out.position = self.position + vel * dt;
     wrapPosition(out.position);
+
+    // aggiorna heading solo se il movimento è "valido"
+    if (speed2 > 1e-4f) {
+        out.headingDeg = std::atan2(vel.y, vel.x) * 180.f / 3.14159265f + 90.f;
+    } else {
+        out.headingDeg = self.headingDeg;
+    }
 
     return out;
 }

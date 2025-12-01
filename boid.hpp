@@ -3,8 +3,9 @@
 #include <vector>
 
 struct Boid {
-    sf::Vector2f position;
-    sf::Vector2f velocity;
+    sf::Vector2f position; // posizione
+    sf::Vector2f velocity; // velocità
+    float headingDeg = 0.f; // direzione in gradi
 };
 
 class BoidSystem {
