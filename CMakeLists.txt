@@ -11,12 +11,23 @@ set(SFML_DIR "C:/Users/Utente/SFML-2.6.2/lib/cmake/SFML")
 # Cerca SFML (graphics + window + system)
 find_package(SFML 2.6 COMPONENTS graphics window system REQUIRED)
 
+# --- OpenMP ---
+find_package(OpenMP REQUIRED)
+
 # Indica l'eseguibile
-add_executable(Boids_PP_Lab1 main.cpp
+add_executable(Boids_PP_Lab1
+        main.cpp
         boid.hpp
         config.hpp
-        boid.cpp)
+        boid.cpp
+)
 
-# Collega le librerie SFML
-target_link_libraries(Boids_PP_Lab1 PRIVATE sfml-graphics sfml-window sfml-system)
+# Collega le librerie SFML + OpenMP
+target_link_libraries(Boids_PP_Lab1 PRIVATE
+        sfml-graphics
+        sfml-window
+        sfml-system
+        OpenMP::OpenMP_CXX
+)
+
 

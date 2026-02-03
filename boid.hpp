@@ -12,7 +12,7 @@ class BoidSystem {
 public:
     explicit BoidSystem(std::size_t count);
 
-    void updateSequential(float dt);
+    void updateSequential(float dt); // versione sequenziale
     void updateParallel(float dt);   // versione OpenMP
 
     void draw(sf::RenderWindow& window) const;

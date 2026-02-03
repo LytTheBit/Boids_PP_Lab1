@@ -1,9 +1,11 @@
 #include <SFML/Graphics.hpp>
 #include <chrono>
 #include <iostream>
+#include <omp.h>
 
 #include "config.hpp"
 #include "boid.hpp"
+
 
 enum class UpdateMode {
     Sequential,
@@ -19,8 +21,24 @@ int main() {
     window.setFramerateLimit(60);
 
     // --- Sistema di boids ---
-    constexpr std::size_t NUM_BOIDS = 300;
+    constexpr std::size_t NUM_BOIDS = 3000;
     BoidSystem boids(NUM_BOIDS);
+
+    std::cout << "OpenMP diagnostics:\n";
+    std::cout << "  omp_get_num_procs()      = " << omp_get_num_procs() << "\n";
+    std::cout << "  omp_get_max_threads()    = " << omp_get_max_threads() << "\n";
+
+    #pragma omp parallel
+    {
+        #pragma omp single
+        {
+            std::cout << "  threads_in_parallel_region = "
+                      << omp_get_num_threads() << "\n";
+        }
+    }
+
+    std::cout << std::endl;
+
 
     // --- Misura del tempo di simulazione ---
     UpdateMode mode = UpdateMode::Sequential;
@@ -100,6 +118,8 @@ int main() {
                       << "  min=" << minUpdateMs << " ms"
                       << "  max=" << maxUpdateMs << " ms\n";
         }
+
+
 
         // --- Rendering ---
         window.clear(sf::Color::Black);

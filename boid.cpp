@@ -41,7 +41,7 @@ void BoidSystem::draw(sf::RenderWindow& window) const {
 sf::ConvexShape BoidSystem::makeBoidShape(const Boid& boid) {
     sf::ConvexShape shape;
     shape.setPointCount(3);
-    float size = 6.f; // Dimensione del boid
+    float size = 5.f; // Dimensione del boid
     shape.setPoint(0, {0.f, -size});
     shape.setPoint(1, {-size, size});
     shape.setPoint(2, {size, size});
